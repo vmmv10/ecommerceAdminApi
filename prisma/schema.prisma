@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  UsuarioID  Int      @id @default(autoincrement())
+  Nombre     String
+  Correo     String   @unique
+  Contrasena String
+  pedidos    Pedido[]
+}
+
+// Definición del modelo Producto
+model Producto {
+  id          Int    @id @default(autoincrement())
+  Nombre      String
+  Descripcion String
+  Precio      Float
+  Stock       Int
+
+  variantes  VarianteProducto[]
+  categorias CategoriaProducto[]
+}
+
+model VarianteProducto {
+  id         Int    @id @default(autoincrement())
+  ProductoID Int
+  Color      String
+  Talla      String
+  Precio     Float
+  Stock      Int
+
+  producto      Producto        @relation(fields: [ProductoID], references: [id])
+  DetallePedido DetallePedido[]
+  Categoria     Categoria[]
+}
+
+model Categoria {
+  id                         Int                 @id @default(autoincrement())
+  Nombre                     String
+  VarianteProducto           VarianteProducto?   @relation(fields: [varianteProductoVarianteID], references: [id])
+  varianteProductoVarianteID Int?
+  categorias                 CategoriaProducto[]
+  varianteProductoId         Int?
+}
+
+model CategoriaProducto {
+  id           Int       @id @default(autoincrement())
+  tabla        String
+  producto     Producto  @relation(fields: [producto_id], references: [id], onDelete: Cascade)
+  categoria    Categoria @relation(fields: [categoria_id], references: [id], onDelete: Cascade)
+  categoria_id Int
+  producto_id  Int
+}
+
+model Pedido {
+  id               Int             @id @default(autoincrement())
+  UsuarioID        Int
+  FechaPedido      DateTime
+  Estado           String
+  usuario          Usuario         @relation(fields: [usuarioUsuarioID], references: [UsuarioID])
+  detalles         DetallePedido[]
+  usuarioUsuarioID Int
+}
+
+model DetallePedido {
+  DetalleID                  Int              @id @default(autoincrement())
+  PedidoID                   Int
+  VarianteID                 Int
+  Cantidad                   Int
+  PrecioUnitario             Float
+  pedido                     Pedido           @relation(fields: [PedidoID], references: [id])
+  variante                   VarianteProducto @relation(fields: [varianteProductoVarianteID], references: [id])
+  pedidoPedidoID             Int
+  varianteProductoVarianteID Int
+}
