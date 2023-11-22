@@ -13,7 +13,7 @@ app.use(cors())
 app.use("/api", productosRoutes);
 app.use("/api", variantesProductos);
 app.use("/api", payment);
-// app.use("/api", authRoutes)
+app.use("/api", authRoutes)
 
 app.listen(5000)
 console.log('server on port', 5000)
