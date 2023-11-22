@@ -69,6 +69,7 @@ model Pedido {
   usuario          Usuario         @relation(fields: [usuarioUsuarioID], references: [UsuarioID])
   detalles         DetallePedido[]
   usuarioUsuarioID Int
+  Pago             Pago[]
 }
 
 model DetallePedido {
@@ -81,4 +82,15 @@ model DetallePedido {
   variante                   VarianteProducto @relation(fields: [varianteProductoVarianteID], references: [id])
   pedidoPedidoID             Int
   varianteProductoVarianteID Int
+}
+
+model Pago {
+  id           Int     @id @default(autoincrement())
+  PedidoID     Int
+  MetodoPago   String // Método de pago (ej. "Mercado Pago")
+  Estado       String // Estado del pago (ej. pendiente, aprobado, rechazado, etc.)
+  Monto        Float // Monto del pago
+  DetallesPago String? // Detalles adicionales del pago si es necesario
+  // Relación con pedido
+  pedido       Pedido  @relation(fields: [PedidoID], references: [id])
 }
