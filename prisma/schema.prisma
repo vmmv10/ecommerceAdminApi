@@ -10,12 +10,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model TipoUsuario {
+  id       Int       @id @default(autoincrement())
+  Nombre   String
+  admin    Boolean   @default(false)
+  usuarios Usuario[]
+}
+
 model Usuario {
-  UsuarioID  Int      @id @default(autoincrement())
-  Nombre     String
-  Correo     String   @unique
-  Contrasena String
-  pedidos    Pedido[]
+  id              Int          @id @default(autoincrement())
+  nombre          String
+  apellidos       String
+  email           String       @unique
+  password        String
+  tipo_usuario_id Int?
+  grupoUsuario    TipoUsuario? @relation(fields: [tipo_usuario_id], references: [id])
+  pedidos         Pedido[]
+}
+
+model ecommerce {
+  id                    Int     @id @default(autoincrement())
+  nombre                String
+  titulo                String
+  mensaje_sin_stock     String
+  mercadopago_api_key   String
+  despacho_gratis_desde String
+  telefono1             String
+  telefono2             String
+  whatsapp1             String
+  whatsapp2             String
+  correo_info           String
+  correo_contacto       String
+  horario_atencion      String
+  redes_sociales        Json
+  despacho_gratis       Boolean
+  descripcion           String
+  clarity_id            String
+  pixel_fb_id           String
 }
 
 // Definición del modelo Producto
@@ -45,7 +76,7 @@ model VarianteProducto {
 
 model Categoria {
   id                         Int                 @id @default(autoincrement())
-  Nombre                     String
+  nombre                     String
   VarianteProducto           VarianteProducto?   @relation(fields: [varianteProductoVarianteID], references: [id])
   varianteProductoVarianteID Int?
   categorias                 CategoriaProducto[]
@@ -62,14 +93,13 @@ model CategoriaProducto {
 }
 
 model Pedido {
-  id               Int             @id @default(autoincrement())
-  UsuarioID        Int
-  FechaPedido      DateTime
-  Estado           String
-  usuario          Usuario         @relation(fields: [usuarioUsuarioID], references: [UsuarioID])
-  detalles         DetallePedido[]
-  usuarioUsuarioID Int
-  Pago             Pago[]
+  id          Int             @id @default(autoincrement())
+  usuario_id  Int?
+  FechaPedido DateTime
+  estado      String
+  usuario     Usuario?        @relation(fields: [usuario_id], references: [id])
+  detalles    DetallePedido[]
+  Pago        Pago[]
 }
 
 model DetallePedido {
