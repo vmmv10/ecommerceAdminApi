@@ -52,32 +52,35 @@ model ecommerce {
 // Definición del modelo Producto
 model Producto {
   id          Int    @id @default(autoincrement())
-  Nombre      String
-  Descripcion String
-  Precio      Float
-  Stock       Int
+  nombre      String
+  descripcion String
+  precio      Float
+  stock       Int
+  marca_id    Int
 
   variantes  VarianteProducto[]
   categorias CategoriaProducto[]
+  Marca      Marca?              @relation(fields: [marcaId], references: [id])
+  marcaId    Int?
 }
 
 model VarianteProducto {
-  id         Int    @id @default(autoincrement())
-  ProductoID Int
-  Color      String
-  Talla      String
-  Precio     Float
-  Stock      Int
+  id          Int    @id @default(autoincrement())
+  producto_id Int
+  color       String
+  talla       String
+  precio      Float
+  stock       Int
 
-  producto      Producto        @relation(fields: [ProductoID], references: [id])
-  DetallePedido DetallePedido[]
-  Categoria     Categoria[]
+  producto      Producto        @relation(fields: [producto_id], references: [id])
+  detallePedido DetallePedido[]
+  categoria     Categoria[]
 }
 
 model Categoria {
   id                         Int                 @id @default(autoincrement())
   nombre                     String
-  VarianteProducto           VarianteProducto?   @relation(fields: [varianteProductoVarianteID], references: [id])
+  varianteProducto           VarianteProducto?   @relation(fields: [varianteProductoVarianteID], references: [id])
   varianteProductoVarianteID Int?
   categorias                 CategoriaProducto[]
   varianteProductoId         Int?
@@ -95,7 +98,7 @@ model CategoriaProducto {
 model Pedido {
   id          Int             @id @default(autoincrement())
   usuario_id  Int?
-  FechaPedido DateTime
+  fechaPedido DateTime
   estado      String
   usuario     Usuario?        @relation(fields: [usuario_id], references: [id])
   detalles    DetallePedido[]
@@ -103,12 +106,12 @@ model Pedido {
 }
 
 model DetallePedido {
-  DetalleID                  Int              @id @default(autoincrement())
-  PedidoID                   Int
-  VarianteID                 Int
-  Cantidad                   Int
-  PrecioUnitario             Float
-  pedido                     Pedido           @relation(fields: [PedidoID], references: [id])
+  id                         Int              @id @default(autoincrement())
+  pedido_id                  Int
+  varianteID                 Int
+  cantidad                   Int
+  precioUnitario             Float
+  pedido                     Pedido           @relation(fields: [pedido_id], references: [id])
   variante                   VarianteProducto @relation(fields: [varianteProductoVarianteID], references: [id])
   pedidoPedidoID             Int
   varianteProductoVarianteID Int
@@ -116,11 +119,18 @@ model DetallePedido {
 
 model Pago {
   id           Int     @id @default(autoincrement())
-  PedidoID     Int
-  MetodoPago   String // Método de pago (ej. "Mercado Pago")
-  Estado       String // Estado del pago (ej. pendiente, aprobado, rechazado, etc.)
-  Monto        Float // Monto del pago
-  DetallesPago String? // Detalles adicionales del pago si es necesario
+  pedido_id    Int
+  metodoPago   String // Método de pago (ej. "Mercado Pago")
+  estado       String // Estado del pago (ej. pendiente, aprobado, rechazado, etc.)
+  monto        Float // Monto del pago
+  detallesPago String? // Detalles adicionales del pago si es necesario
   // Relación con pedido
-  pedido       Pedido  @relation(fields: [PedidoID], references: [id])
+  pedido       Pedido  @relation(fields: [pedido_id], references: [id])
+}
+
+model Marca {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  productos   Producto[]
 }
