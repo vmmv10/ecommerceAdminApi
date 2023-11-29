@@ -17,3 +17,18 @@ export async function postMarca(req, res) {
     )
     res.json('Realizado con éxito', 200)
 }
+
+export async function deleteMarca(req, res) {
+    try {
+        const usuario = await prisma.marca.delete(
+            {
+                where: {
+                    id: Number(req.params.id)
+                },
+            }
+        )
+        res.json('Realizado con éxito', 200)
+    } catch (error) {
+        res.status(400).json({ error })
+    }
+}
